@@ -2,7 +2,6 @@ package com.enigma.wmb_api.entity;
 
 import com.enigma.wmb_api.constant.ConstantTable;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.AllArgsConstructor;
@@ -24,6 +23,10 @@ public class BillDetail {
     @JoinColumn(name = "bill_id", nullable = false)
     @JsonBackReference
     private Bill bill;
+
+    @ManyToOne
+    @JoinColumn(name = "menu_id", nullable = false)
+    private Menu menu;
 
     @Column(name = "price", nullable = false, updatable = false)
     private Long price;

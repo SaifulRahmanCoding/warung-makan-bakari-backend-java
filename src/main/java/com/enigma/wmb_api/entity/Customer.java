@@ -3,15 +3,13 @@ package com.enigma.wmb_api.entity;
 import com.enigma.wmb_api.constant.ConstantTable;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name = ConstantTable.CUSTOMER)
 public class Customer {
@@ -19,12 +17,12 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "mobile_phone_no")
+    @Column(name = "mobile_phone_no", nullable = false)
     private String mobilePhoneNo;
 
-    @Column(name = "is_member")
+    @Column(name = "is_member", nullable = false)
     private Boolean isMember;
 }

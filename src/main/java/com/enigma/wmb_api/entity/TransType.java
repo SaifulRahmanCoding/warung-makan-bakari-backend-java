@@ -20,6 +20,6 @@ public class TransType {
     @Id
     private String id;
 
-    @Column(name = "description")
+    @Column(name = "description", nullable = false)
     private String description;
 }

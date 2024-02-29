@@ -18,6 +18,6 @@ public class MsTable {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "name")
+    @Column(name = "name",nullable = false)
     private String name;
 }
