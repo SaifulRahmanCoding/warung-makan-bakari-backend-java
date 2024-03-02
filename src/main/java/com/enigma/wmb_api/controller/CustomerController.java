@@ -8,16 +8,17 @@ import com.enigma.wmb_api.dto.response.PagingResponse;
 import com.enigma.wmb_api.entity.Customer;
 import com.enigma.wmb_api.service.CustomerService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping(path = APIUrl.CUSTOMER_API)
 public class CustomerController {
     private final CustomerService customerService;
@@ -72,8 +73,8 @@ public class CustomerController {
             @RequestParam(name = "sortBy", defaultValue = "name") String sortBy,
             @RequestParam(name = "direction", defaultValue = "asc") String direction,
             @RequestParam(name = "name", required = false) String name,
-            @RequestParam(name = "mobilePhoneNumber", required = false) String phoneNumber,
-            @RequestParam(name = "isMember", required = false) Boolean isMember
+            @RequestParam(name = "phone", required = false) String phone,
+            @RequestParam(name = "member", required = false) Boolean member
     ) {
         CustomerRequest request = CustomerRequest.builder()
                 .page(page)
@@ -81,8 +82,8 @@ public class CustomerController {
                 .sortBy(sortBy)
                 .direction(direction)
                 .name(name)
-                .mobilePhoneNo(phoneNumber)
-                .isMember(isMember)
+                .mobilePhoneNo(phone)
+                .isMember(member)
                 .build();
         Page<CustomerResponse> customers = customerService.findAll(request);
         PagingResponse pagingResponse = PagingResponse.builder()

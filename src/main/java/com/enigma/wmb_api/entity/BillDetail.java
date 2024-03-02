@@ -32,5 +32,5 @@ public class BillDetail {
     private Long price;
 
     @Column(name = "qty", nullable = false)
-    private Float qty;
+    private Integer qty;
 }
