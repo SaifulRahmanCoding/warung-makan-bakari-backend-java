@@ -27,12 +27,15 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer create(CustomerRequest request) {
+        // validasi request kosong atau tidak
         validationUtil.validate(request);
+        // buat object menu
         Customer customer = Customer.builder()
                 .name(request.getName())
                 .mobilePhoneNo(request.getMobilePhoneNo())
                 .isMember(request.getIsMember())
                 .build();
+        // save dan return
         return customerRepository.saveAndFlush(customer);
     }
 
@@ -51,13 +54,20 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Page<CustomerResponse> findAll(CustomerRequest request) {
+        // cek apakah page kurang dari 0, jika ya maka set sama dengan 1
         if (request.getPage() <= 0) request.setPage(1);
+        // buat sort by dan direction nya
         Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
+        // buat page
         Pageable pageable = PageRequest.of((request.getPage() - 1), request.getSize(), sort);
+        // buat specification untuk query custom-nya
         Specification<Customer> specification = CustomerSpecification.getSpecification(request);
+        // find all customer dan jadikan tipe data page
         Page<Customer> customers = customerRepository.findAll(specification, pageable);
 
-        log.info("size content: " + customers.getContent().size());
+        // log.info("size content: " + customers.getContent().size());
+        // latihan untuk membuat response bill
+        // buat list customer response dengan value content customers yang di ubah menggunakan stream map
         List<CustomerResponse> customerResponses = customers.getContent().stream()
                 .map(customer -> {
                     return CustomerResponse.builder()

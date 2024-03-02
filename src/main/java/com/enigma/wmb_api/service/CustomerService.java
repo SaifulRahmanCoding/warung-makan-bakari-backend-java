@@ -4,9 +4,7 @@ import com.enigma.wmb_api.dto.request.CustomerRequest;
 import com.enigma.wmb_api.dto.response.CustomerResponse;
 import com.enigma.wmb_api.entity.Customer;
 import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Repository;
 
-@Repository
 public interface CustomerService {
     Page<CustomerResponse> findAll(CustomerRequest request);
 
