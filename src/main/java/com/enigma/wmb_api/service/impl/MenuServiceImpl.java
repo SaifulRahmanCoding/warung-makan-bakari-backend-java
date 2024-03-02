@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
@@ -44,6 +45,7 @@ public class MenuServiceImpl implements MenuService {
         return optionalMenu.get();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Menu create(MenuRequest request) {
         validationUtil.validate(request);
@@ -54,6 +56,7 @@ public class MenuServiceImpl implements MenuService {
         return menuRepository.saveAndFlush(menu);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Menu update(Menu menu) {
         validationUtil.validate(menu);
@@ -61,6 +64,7 @@ public class MenuServiceImpl implements MenuService {
         return menuRepository.saveAndFlush(menu);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(String id) {
         Menu menu = findById(id);

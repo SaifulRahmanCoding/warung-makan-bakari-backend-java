@@ -13,6 +13,7 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final ValidationUtil validationUtil;
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Customer create(CustomerRequest request) {
         // validasi request kosong atau tidak
@@ -39,6 +41,7 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.saveAndFlush(customer);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Customer update(Customer customer) {
         validationUtil.validate(customer);
@@ -46,6 +49,7 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.saveAndFlush(customer);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(String id) {
         Customer customer = findById(id);

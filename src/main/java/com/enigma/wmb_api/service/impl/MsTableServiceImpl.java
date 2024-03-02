@@ -8,6 +8,7 @@ import com.enigma.wmb_api.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public class MsTableServiceImpl implements MsTableService {
         return table.get();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public MsTable create(MsTableRequest request) {
         validationUtil.validate(request);
@@ -38,6 +40,7 @@ public class MsTableServiceImpl implements MsTableService {
         return tableRepository.saveAndFlush(table);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public MsTable update(MsTable menu) {
         validationUtil.validate(menu);
@@ -45,6 +48,7 @@ public class MsTableServiceImpl implements MsTableService {
         return tableRepository.saveAndFlush(menu);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(String id) {
         MsTable table = findById(id);
