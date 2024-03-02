@@ -10,12 +10,20 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class CustomerRequest {
-    @NotBlank(message = "name is required")
+    // @NotBlank(message = "name is required")
+    // private String name;
+    //
+    // @NotBlank(message = "mobile phone number is required")
+    // private String mobilePhoneNo;
+    //
+    // @NotNull(message = "status is required")
+    // private Boolean isMember;
+
     private String name;
-
-    @NotBlank(message = "mobile phone number is required")
     private String mobilePhoneNo;
-
-    @NotNull(message = "status is required")
     private Boolean isMember;
+    private Integer page;
+    private Integer size;
+    private String sortBy;
+    private String direction;
 }
