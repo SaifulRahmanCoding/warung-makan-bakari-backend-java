@@ -18,9 +18,11 @@ public class CustomerRequest {
     //
     // @NotNull(message = "status is required")
     // private Boolean isMember;
-
+    @NotBlank
     private String name;
+    @NotBlank
     private String mobilePhoneNo;
+    @NotNull
     private Boolean isMember;
     private Integer page;
     private Integer size;

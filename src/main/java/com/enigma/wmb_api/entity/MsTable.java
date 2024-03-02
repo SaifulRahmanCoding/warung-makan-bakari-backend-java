@@ -2,15 +2,13 @@ package com.enigma.wmb_api.entity;
 
 import com.enigma.wmb_api.constant.ConstantTable;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name = ConstantTable.TABLE)
 public class MsTable {
