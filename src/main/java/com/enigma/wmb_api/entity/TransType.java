@@ -1,25 +1,22 @@
 package com.enigma.wmb_api.entity;
 
 import com.enigma.wmb_api.constant.ConstantTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.enigma.wmb_api.constant.EnumTransType;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name = ConstantTable.TRANS_TYPE)
 public class TransType {
     @Id
-    private String id;
+    @Enumerated(EnumType.STRING)
+    private EnumTransType id;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description")
     private String description;
 }

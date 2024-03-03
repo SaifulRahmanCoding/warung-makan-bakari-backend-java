@@ -3,15 +3,13 @@ package com.enigma.wmb_api.entity;
 import com.enigma.wmb_api.constant.ConstantTable;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name = ConstantTable.BILL_DETAIL)
 public class BillDetail {
