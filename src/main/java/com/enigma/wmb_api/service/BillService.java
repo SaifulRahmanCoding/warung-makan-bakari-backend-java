@@ -9,5 +9,5 @@ public interface BillService {
 
     Page<BillResponse> findAll(BillRequest request);
 
-    BillResponse findById(BillRequest request);
+    BillResponse findById(String id);
 }
