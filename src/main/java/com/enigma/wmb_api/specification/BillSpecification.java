@@ -23,7 +23,7 @@ public class BillSpecification {
                 Date date = DateUtil.parseDate(request.getTransDate(), "yyyy-MM-dd");
                 Timestamp endDate = new Timestamp(date.getTime() + 86399000);
                 // log.info("tanggal-> " + date + " " + endDate);
-                Predicate transDate = criteriaBuilder.between(root.get("transDate"), date, endDate);
+                    Predicate transDate = criteriaBuilder.between(root.get("transDate"), date, endDate);
                 predicates.add(transDate);
             }
 

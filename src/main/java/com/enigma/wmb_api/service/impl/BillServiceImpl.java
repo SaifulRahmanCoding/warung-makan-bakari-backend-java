@@ -8,16 +8,20 @@ import com.enigma.wmb_api.entity.*;
 import com.enigma.wmb_api.repository.BillRepository;
 import com.enigma.wmb_api.service.*;
 import com.enigma.wmb_api.specification.BillSpecification;
+import com.enigma.wmb_api.util.DateUtil;
 import com.enigma.wmb_api.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -87,38 +91,50 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public Page<BillResponse> findAll(BillRequest request) {
+        if (request.getStartDate() != null && request.getEndDate() != null) {
+            if (DateUtil.parseDate(request.getStartDate(), "yyyy-MM-dd").getTime() > DateUtil.parseDate(request.getEndDate(), "yyyy-MM-dd").getTime())
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "end date must be greater than start date");
+        }
+
         if (request.getPage() <= 0) request.setPage(1);
+
         Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
+
         Pageable pageable = PageRequest.of((request.getPage() - 1), request.getSize(), sort);
+
         Specification<Bill> specification = BillSpecification.getSpecification(request);
+
         Page<Bill> bills = billRepository.findAll(specification, pageable);
 
-        List<BillResponse> billResponses = bills.getContent().stream().map(bill -> {
-            // buat bill detail response
-            List<BillDetailResponse> billDetailResponses = bill.getBillDetails().stream()
-                    .map(detail -> BillDetailResponse.builder()
-                            .id(detail.getId())
-                            .menuId(detail.getMenu().getId())
-                            .quantity(detail.getQty())
-                            .price(detail.getPrice())
-                            .build())
-                    .toList();
-            // log.info(String.valueOf(bill.getTransDate()));
-            return BillResponse.builder()
-                    .id(bill.getId())
-                    .customerId(bill.getCustomer().getId())
-                    .tableId((bill.getTable() != null) ? bill.getTable().getId() : null)
-                    .transDate(String.valueOf(bill.getTransDate()))
-                    .transType(bill.getTransType().getId().name())
-                    .billDetails(billDetailResponses)
-                    .build();
-        }).toList();
+        // buat bill detail response
+        List<BillResponse> billResponses = bills.getContent().stream().map(this::getBillResponse).toList();
         return new PageImpl<>(billResponses, pageable, bills.getTotalElements());
     }
 
     @Override
     public BillResponse findById(String id) {
-        return null;
+        Optional<Bill> optionalBill = billRepository.findById(id);
+        if (optionalBill.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "bill not found");
+        Bill bill = optionalBill.get();
+        return getBillResponse(bill);
     }
 
+    private BillResponse getBillResponse(Bill bill) {
+        List<BillDetailResponse> billDetailResponses = bill.getBillDetails().stream()
+                .map(detail -> BillDetailResponse.builder()
+                        .id(detail.getId())
+                        .menuId(detail.getMenu().getId())
+                        .quantity(detail.getQty())
+                        .price(detail.getPrice())
+                        .build())
+                .toList();
+        return BillResponse.builder()
+                .id(bill.getId())
+                .customerId(bill.getCustomer().getId())
+                .tableId((bill.getTable() != null) ? bill.getTable().getId() : null)
+                .transDate(String.valueOf(bill.getTransDate()))
+                .transType(bill.getTransType().getId().name())
+                .billDetails(billDetailResponses)
+                .build();
+    }
 }

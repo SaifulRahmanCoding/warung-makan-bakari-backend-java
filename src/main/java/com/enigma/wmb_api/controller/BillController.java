@@ -68,4 +68,15 @@ public class BillController {
                 .build();
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<CommonResponse<BillResponse>> findBillById(@PathVariable String id) {
+        BillResponse bill = billService.findById(id);
+        CommonResponse<BillResponse> response = CommonResponse.<BillResponse>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("successfully get bill")
+                .data(bill)
+                .build();
+        return ResponseEntity.ok(response);
+    }
 }
