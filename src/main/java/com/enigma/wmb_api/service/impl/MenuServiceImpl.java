@@ -25,6 +25,7 @@ public class MenuServiceImpl implements MenuService {
     private final MenuRepository menuRepository;
     private final ValidationUtil validationUtil;
 
+    @Transactional(readOnly = true)
     @Override
     public Page<Menu> findAll(MenuRequest request) {
         if (request.getMinPrice() != null && request.getMaxPrice() != null) {
@@ -38,6 +39,7 @@ public class MenuServiceImpl implements MenuService {
         return menuRepository.findAll(specification, pageable);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Menu findById(String id) {
         Optional<Menu> optionalMenu = menuRepository.findById(id);

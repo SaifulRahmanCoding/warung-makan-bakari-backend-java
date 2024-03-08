@@ -89,6 +89,7 @@ public class BillServiceImpl implements BillService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<BillResponse> findAll(BillRequest request) {
         if (request.getStartDate() != null && request.getEndDate() != null) {
@@ -111,6 +112,7 @@ public class BillServiceImpl implements BillService {
         return new PageImpl<>(billResponses, pageable, bills.getTotalElements());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public BillResponse findById(String id) {
         Optional<Bill> optionalBill = billRepository.findById(id);

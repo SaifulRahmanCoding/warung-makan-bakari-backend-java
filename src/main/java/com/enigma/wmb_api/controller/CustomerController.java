@@ -1,7 +1,9 @@
 package com.enigma.wmb_api.controller;
 
 import com.enigma.wmb_api.constant.APIUrl;
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.dto.request.CustomerRequest;
+import com.enigma.wmb_api.dto.request.UpdateCustomerRequest;
 import com.enigma.wmb_api.dto.response.CommonResponse;
 import com.enigma.wmb_api.dto.response.CustomerResponse;
 import com.enigma.wmb_api.dto.response.PagingResponse;
@@ -11,7 +13,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,23 +27,15 @@ import java.util.List;
 public class CustomerController {
     private final CustomerService customerService;
 
-    @PostMapping
-    public ResponseEntity<CommonResponse<Customer>> createNewCustomer(@RequestBody CustomerRequest request) {
-        Customer customer = customerService.create(request);
-        CommonResponse<Customer> response = CommonResponse.<Customer>builder()
-                .statusCode(HttpStatus.CREATED.value())
-                .message("successfully create new customer")
-                .data(customer)
-                .build();
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    @PutMapping
-    public ResponseEntity<CommonResponse<Customer>> updateCustomer(@RequestBody Customer customer) {
-        Customer newCustomer = customerService.update(customer);
-        CommonResponse<Customer> response = CommonResponse.<Customer>builder()
+    @PutMapping(
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<CommonResponse<CustomerResponse>> updateCustomer(@RequestBody UpdateCustomerRequest request) {
+        CustomerResponse newCustomer = customerService.update(request);
+        CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("successfully update customer")
+                .message(ResponseMessage.SUCCESS_UPDATE_DATA)
                 .data(newCustomer)
                 .build();
         return ResponseEntity.ok(response);
@@ -50,7 +46,7 @@ public class CustomerController {
         customerService.delete(id);
         CommonResponse<Customer> response = CommonResponse.<Customer>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("successfully delete customer")
+                .message(ResponseMessage.SUCCESS_DELETE_DATA)
                 .build();
         return ResponseEntity.ok(response);
     }
@@ -60,7 +56,7 @@ public class CustomerController {
         Customer customer = customerService.findById(id);
         CommonResponse<Customer> response = CommonResponse.<Customer>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("successfully get customer")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(customer)
                 .build();
         return ResponseEntity.ok(response);
@@ -97,7 +93,7 @@ public class CustomerController {
 
         CommonResponse<List<CustomerResponse>> response = CommonResponse.<List<CustomerResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("success get all customer")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(customers.getContent())
                 .paging(pagingResponse)
                 .build();

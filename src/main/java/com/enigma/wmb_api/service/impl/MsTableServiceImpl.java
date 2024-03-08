@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.service.impl;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.dto.request.MsTableRequest;
 import com.enigma.wmb_api.entity.MsTable;
 import com.enigma.wmb_api.repository.MsTableRepository;
@@ -20,15 +21,17 @@ public class MsTableServiceImpl implements MsTableService {
     private final MsTableRepository tableRepository;
     private final ValidationUtil validationUtil;
 
+    @Transactional(readOnly = true)
     @Override
     public List<MsTable> findAll() {
         return tableRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public MsTable findById(String id) {
         Optional<MsTable> table = tableRepository.findById(id);
-        if (table.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "table not found");
+        if (table.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND);
         return table.get();
     }
 

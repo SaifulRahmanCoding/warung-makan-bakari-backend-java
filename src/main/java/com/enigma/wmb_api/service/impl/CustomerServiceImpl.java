@@ -1,6 +1,7 @@
 package com.enigma.wmb_api.service.impl;
 
 import com.enigma.wmb_api.dto.request.CustomerRequest;
+import com.enigma.wmb_api.dto.request.UpdateCustomerRequest;
 import com.enigma.wmb_api.dto.response.CustomerResponse;
 import com.enigma.wmb_api.entity.Customer;
 import com.enigma.wmb_api.repository.CustomerRepository;
@@ -28,25 +29,21 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Customer create(CustomerRequest request) {
-        // validasi request kosong atau tidak
-        validationUtil.validate(request);
-        // buat object menu
-        Customer customer = Customer.builder()
-                .name(request.getName())
-                .mobilePhoneNo(request.getMobilePhoneNo())
-                .isMember(request.getIsMember())
-                .build();
-        // save dan return
+    public Customer create(Customer customer) {
         return customerRepository.saveAndFlush(customer);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Customer update(Customer customer) {
+    public CustomerResponse update(UpdateCustomerRequest customer) {
         validationUtil.validate(customer);
-        findById(customer.getId());
-        return customerRepository.saveAndFlush(customer);
+        Customer currentCustomer = findById(customer.getId());
+        currentCustomer.setName(customer.getName());
+        currentCustomer.setMobilePhoneNo(customer.getMobilePhoneNo());
+        currentCustomer.setIsMember(customer.getIsMember());
+        customerRepository.saveAndFlush(currentCustomer);
+
+        return convertCustomerToCustomerResponse(currentCustomer);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -56,6 +53,7 @@ public class CustomerServiceImpl implements CustomerService {
         customerRepository.delete(customer);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<CustomerResponse> findAll(CustomerRequest request) {
         // cek apakah page kurang dari 0, jika ya maka set sama dengan 1
@@ -79,15 +77,27 @@ public class CustomerServiceImpl implements CustomerService {
                             .name(customer.getName())
                             .mobilePhoneNo(customer.getMobilePhoneNo())
                             .isMember(customer.getIsMember())
+                            .userAccountId(customer.getUserAccount().getId())
                             .build();
                 }).toList();
         return new PageImpl<>(customerResponses, pageable, customers.getTotalElements());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Customer findById(String id) {
         Optional<Customer> optionalCustomer = customerRepository.findById(id);
         if (optionalCustomer.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "customer not found");
         return optionalCustomer.get();
+    }
+
+    private CustomerResponse convertCustomerToCustomerResponse(Customer customer) {
+        return CustomerResponse.builder()
+                .id(customer.getId())
+                .name(customer.getName())
+                .mobilePhoneNo(customer.getMobilePhoneNo())
+                .isMember(customer.getIsMember())
+                .userAccountId(customer.getUserAccount().getId())
+                .build();
     }
 }

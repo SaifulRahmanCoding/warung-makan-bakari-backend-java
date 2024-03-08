@@ -1,4 +1,4 @@
-package com.enigma.wmb_api.dto.response;
+package com.enigma.wmb_api.dto.request;
 
 import lombok.*;
 
@@ -7,10 +7,10 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CustomerResponse {
+public class UpdateCustomerRequest {
     private String id;
     private String name;
     private String mobilePhoneNo;
     private Boolean isMember;
-    private String userAccountId;
+
 }
