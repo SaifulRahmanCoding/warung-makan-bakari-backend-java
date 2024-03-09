@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.service.impl;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.dto.request.CustomerRequest;
 import com.enigma.wmb_api.dto.request.UpdateCustomerRequest;
 import com.enigma.wmb_api.dto.response.CustomerResponse;
@@ -18,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,12 +35,12 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public CustomerResponse update(UpdateCustomerRequest customer) {
-        validationUtil.validate(customer);
-        Customer currentCustomer = findById(customer.getId());
-        currentCustomer.setName(customer.getName());
-        currentCustomer.setMobilePhoneNo(customer.getMobilePhoneNo());
-        currentCustomer.setIsMember(customer.getIsMember());
+    public CustomerResponse update(UpdateCustomerRequest request) {
+        Customer currentCustomer = findByIdOrThrowNotFound(request.getId());
+
+        currentCustomer.setName(request.getName());
+        currentCustomer.setMobilePhoneNo(request.getMobilePhoneNo());
+        currentCustomer.setIsMember(request.getIsMember());
         customerRepository.saveAndFlush(currentCustomer);
 
         return convertCustomerToCustomerResponse(currentCustomer);
@@ -49,8 +49,21 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(String id) {
-        Customer customer = findById(id);
+        Customer customer = findByIdOrThrowNotFound(id);
         customerRepository.delete(customer);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void updateStatusMemberById(String id, Boolean isMember) {
+        findByIdOrThrowNotFound(id);
+        customerRepository.updateStatus(id, isMember);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Customer findByIdOrThrowNotFound(String id) {
+        return customerRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)
@@ -85,10 +98,14 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Transactional(readOnly = true)
     @Override
+    public CustomerResponse findOneById(String id) {
+        return convertCustomerToCustomerResponse(findByIdOrThrowNotFound(id));
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public Customer findById(String id) {
-        Optional<Customer> optionalCustomer = customerRepository.findById(id);
-        if (optionalCustomer.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "customer not found");
-        return optionalCustomer.get();
+        return findByIdOrThrowNotFound(id);
     }
 
     private CustomerResponse convertCustomerToCustomerResponse(Customer customer) {

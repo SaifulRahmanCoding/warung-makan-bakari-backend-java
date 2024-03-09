@@ -27,6 +27,7 @@ import java.util.List;
 public class CustomerController {
     private final CustomerService customerService;
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN') OR @authenticateUserServiceImpl.hasSameId(#request)")
     @PutMapping(
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -41,20 +42,22 @@ public class CustomerController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping(path = "/{id}")
-    public ResponseEntity<CommonResponse<Customer>> deleteCustomer(@PathVariable String id) {
+    @DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CommonResponse<String>> deleteCustomer(@PathVariable String id) {
         customerService.delete(id);
-        CommonResponse<Customer> response = CommonResponse.<Customer>builder()
+        CommonResponse<String> response = CommonResponse.<String>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message(ResponseMessage.SUCCESS_DELETE_DATA)
                 .build();
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<CommonResponse<Customer>> findCustomerById(@PathVariable String id) {
-        Customer customer = customerService.findById(id);
-        CommonResponse<Customer> response = CommonResponse.<Customer>builder()
+    @GetMapping(path = "/{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<CommonResponse<CustomerResponse>> findCustomerById(@PathVariable String id) {
+        CustomerResponse customer = customerService.findOneById(id);
+        CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(customer)
@@ -62,6 +65,7 @@ public class CustomerController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @GetMapping
     public ResponseEntity<CommonResponse<List<CustomerResponse>>> findAllCustomer(
             @RequestParam(name = "page", defaultValue = "1") Integer page,

@@ -9,12 +9,18 @@ import org.springframework.data.domain.Page;
 public interface CustomerService {
     Page<CustomerResponse> findAll(CustomerRequest request);
 
+    CustomerResponse findOneById(String id);
+
     Customer findById(String id);
 
-    Customer create(Customer request);
+    Customer create(Customer customer);
 
-    CustomerResponse update(UpdateCustomerRequest customer);
+    CustomerResponse update(UpdateCustomerRequest request);
 
     void delete(String id);
+
+    void updateStatusMemberById(String id, Boolean status);
+
+    Customer findByIdOrThrowNotFound(String id);
 
 }

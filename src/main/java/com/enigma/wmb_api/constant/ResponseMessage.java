@@ -8,4 +8,7 @@ public class ResponseMessage {
     public static final String ERROR_NOT_FOUND = "data not found";
     public static final String ERROR_INTERNAL_SERVER = "internal server error";
     public static final String ERROR_FORBIDDEN = "cannot access this resource";
+    public static final String ERROR_CREATING_JWT = "error while creating jwt token";
+    public static final String SUCCESS_LOGIN = "login successfully";
+    public static final String INVALID_IMAGE_TYPE = "invalid image type";
 }

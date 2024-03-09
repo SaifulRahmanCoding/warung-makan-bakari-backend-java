@@ -10,11 +10,16 @@ import com.enigma.wmb_api.entity.UserAccount;
 import com.enigma.wmb_api.repository.UserAccountRepository;
 import com.enigma.wmb_api.service.AuthService;
 import com.enigma.wmb_api.service.CustomerService;
+import com.enigma.wmb_api.service.JwtService;
 import com.enigma.wmb_api.service.RoleService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +34,8 @@ public class AuthServiceImpl implements AuthService {
     private final RoleService roleService;
     private final CustomerService customerService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
     @Value("${wmb.username.superadmin}")
     private String superAdminUsername;
@@ -92,7 +99,19 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional(readOnly = true)
     public LoginResponse login(AuthRequest request) {
-        return null;
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                request.getUsername(),
+                request.getPassword()
+        );
+        Authentication authenticate = authenticationManager.authenticate(authentication);
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+        UserAccount userAccount = (UserAccount) authenticate.getPrincipal();
+        String token = jwtService.generateToken(userAccount);
+        return LoginResponse.builder()
+                .username(userAccount.getUsername())
+                .roles(userAccount.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                .token(token)
+                .build();
     }
 
     private RegisterResponse saveAccountAndGetRegisterResponse(UserAccount account) {

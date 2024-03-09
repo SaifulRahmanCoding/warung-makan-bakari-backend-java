@@ -8,8 +8,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LoginResponse {
-    private String username;
-    private String token;
+public class JwtClaims {
+    private String userAccountId;
     private List<String> roles;
 }
