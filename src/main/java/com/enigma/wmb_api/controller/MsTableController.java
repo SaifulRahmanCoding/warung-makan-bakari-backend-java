@@ -8,6 +8,7 @@ import com.enigma.wmb_api.service.MsTableService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 public class MsTableController {
     private final MsTableService tableService;
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
     @PostMapping
     public ResponseEntity<CommonResponse<MsTable>> createTable(@RequestBody MsTableRequest request) {
         MsTable table = tableService.create(request);
@@ -29,6 +31,7 @@ public class MsTableController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
     @PutMapping
     public ResponseEntity<CommonResponse<MsTable>> updateTable(@RequestBody MsTable msTable) {
         MsTable table = tableService.update(msTable);
@@ -40,6 +43,7 @@ public class MsTableController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<CommonResponse<MsTable>> deleteTable(@PathVariable String id) {
         tableService.delete(id);
@@ -50,6 +54,7 @@ public class MsTableController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
     @GetMapping
     public ResponseEntity<CommonResponse<List<MsTable>>> findAllTable() {
         List<MsTable> tables = tableService.findAll();
@@ -61,6 +66,7 @@ public class MsTableController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
     @GetMapping(path = "/{id}")
     public ResponseEntity<CommonResponse<MsTable>> findTableById(@PathVariable String id) {
         MsTable table = tableService.findById(id);

@@ -13,9 +13,9 @@ import java.util.List;
 @Builder
 public class BillRequest {
     @NotBlank
-    private String customer;
+    private String customerId;
 
-    private String table;
+    private String tableId;
 
     @NotNull
     private List<BillDetailRequest> billDetails;

@@ -1,9 +1,12 @@
 package com.enigma.wmb_api.service.impl;
 
 import com.enigma.wmb_api.constant.EnumTransType;
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.dto.request.BillRequest;
+import com.enigma.wmb_api.dto.request.UpdateBillStatusRequest;
 import com.enigma.wmb_api.dto.response.BillDetailResponse;
 import com.enigma.wmb_api.dto.response.BillResponse;
+import com.enigma.wmb_api.dto.response.PaymentResponse;
 import com.enigma.wmb_api.entity.*;
 import com.enigma.wmb_api.repository.BillRepository;
 import com.enigma.wmb_api.service.*;
@@ -34,19 +37,20 @@ public class BillServiceImpl implements BillService {
     private final TransTypeService transTypeService;
     private final MenuService menuService;
     private final ValidationUtil validationUtil;
+    private final PaymentService paymentService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public BillResponse create(BillRequest request) {
         validationUtil.validate(request);
         // butuh customer, table dan trans type
-        Customer customer = customerService.findById(request.getCustomer());
+        Customer customer = customerService.findById(request.getCustomerId());
         TransType transType;
 
-        if (request.getTable() != null) transType = transTypeService.findOrSave(EnumTransType.DI);
+        if (request.getTableId() != null) transType = transTypeService.findOrSave(EnumTransType.DI);
         else transType = transTypeService.findOrSave(EnumTransType.TA);
 
-        MsTable table = (request.getTable() != null) ? tableService.findById(request.getTable()) : null;
+        MsTable table = (request.getTableId() != null) ? tableService.findById(request.getTableId()) : null;
 
         Bill trx = Bill.builder()
                 .transDate(new Date())
@@ -79,13 +83,23 @@ public class BillServiceImpl implements BillService {
                             .build();
                 }).toList();
 
+        Payment payment = paymentService.createPayment(trx);
+        trx.setPayment(payment);
+        PaymentResponse paymentResponse = PaymentResponse.builder()
+                .id(payment.getId())
+                .token(payment.getToken())
+                .redirectUrl(payment.getRedirectUrl())
+                .transactionStatus(payment.getBillStatus())
+                .build();
+
         return BillResponse.builder()
                 .id(trx.getId())
                 .transDate(String.valueOf(trx.getTransDate()))
                 .customerId(trx.getCustomer().getId())
-                .tableId((request.getTable() != null) ? trx.getTable().getId() : null)
+                .tableId((request.getTableId() != null) ? trx.getTable().getId() : null)
                 .transType(trx.getTransType().getId().name())
                 .billDetails(trxDetailResponse)
+                .paymentResponse(paymentResponse)
                 .build();
     }
 
@@ -116,9 +130,19 @@ public class BillServiceImpl implements BillService {
     @Override
     public BillResponse findById(String id) {
         Optional<Bill> optionalBill = billRepository.findById(id);
-        if (optionalBill.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "bill not found");
+        if (optionalBill.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND);
         Bill bill = optionalBill.get();
         return getBillResponse(bill);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void updateStatus(UpdateBillStatusRequest request) {
+        Bill bill = billRepository.findById(request.getOrderId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND));
+
+        Payment payment = bill.getPayment();
+        payment.setBillStatus(request.getBillStatus());
     }
 
     private BillResponse getBillResponse(Bill bill) {
