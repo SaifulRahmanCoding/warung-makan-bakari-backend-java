@@ -42,6 +42,7 @@ public class CustomerController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<String>> deleteCustomer(@PathVariable String id) {
         customerService.delete(id);

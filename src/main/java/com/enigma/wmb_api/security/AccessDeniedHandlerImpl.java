@@ -18,6 +18,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
     private final ObjectMapper objectMapper;
+
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
         CommonResponse<?> res = CommonResponse.builder()

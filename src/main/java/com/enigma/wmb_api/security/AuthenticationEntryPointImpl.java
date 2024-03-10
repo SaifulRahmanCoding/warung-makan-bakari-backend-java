@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.security;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.dto.response.CommonResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
@@ -18,11 +19,12 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
     private final ObjectMapper objectMapper;
+
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         CommonResponse<?> res = CommonResponse.builder()
                 .statusCode(HttpStatus.UNAUTHORIZED.value())
-                .message(authException.getMessage())
+                .message(authException.getMessage().equals(ResponseMessage.BAD_CREDENTIAL) ? ResponseMessage.WRONG_USERNAME_OR_PASSWORD : authException.getMessage())
                 .build();
         String responseString = objectMapper.writeValueAsString(res);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
