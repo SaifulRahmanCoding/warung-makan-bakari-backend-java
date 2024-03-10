@@ -22,4 +22,8 @@ public class Menu {
 
     @Column(name = "price", nullable = false)
     private Long price;
+
+    @OneToOne
+    @JoinColumn(name = "image_id", unique = true)
+    private Image image;
 }

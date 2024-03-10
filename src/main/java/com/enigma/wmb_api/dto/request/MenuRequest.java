@@ -3,6 +3,7 @@ package com.enigma.wmb_api.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Setter
 @Getter
@@ -20,4 +21,5 @@ public class MenuRequest {
     private Integer size;
     private String sortBy;
     private String direction;
+    private MultipartFile image;
 }
