@@ -94,7 +94,9 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public void delete(String id) {
         Menu menu = findByIdOrThrowNotFound(id);
+        String imageId = menu.getImage().getId();
         menuRepository.delete(menu);
+        imageService.delete(imageId);
     }
 
     private Menu findByIdOrThrowNotFound(String id) {
