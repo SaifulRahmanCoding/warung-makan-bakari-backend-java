@@ -5,14 +5,25 @@ import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.dto.request.BillRequest;
 import com.enigma.wmb_api.dto.request.UpdateBillStatusRequest;
 import com.enigma.wmb_api.dto.response.BillResponse;
+import com.enigma.wmb_api.dto.response.CSVBillResponse;
 import com.enigma.wmb_api.dto.response.CommonResponse;
 import com.enigma.wmb_api.dto.response.PagingResponse;
+import com.enigma.wmb_api.entity.Bill;
 import com.enigma.wmb_api.service.BillService;
+import com.opencsv.CSVWriter;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,9 +32,11 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = APIUrl.BILL_API)
+@Slf4j
 public class BillController {
     private final BillService billService;
 
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
     @PostMapping(
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -38,6 +51,7 @@ public class BillController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<List<BillResponse>>> findAllBill(
             @RequestParam(name = "page", defaultValue = "1") Integer page,
@@ -98,5 +112,35 @@ public class BillController {
                 .statusCode(HttpStatus.OK.value())
                 .message(ResponseMessage.SUCCESS_UPDATE_DATA)
                 .build());
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+    @GetMapping("/export")
+    public void exportCSV(
+            HttpServletResponse response,
+            @RequestParam(name = "startDate", required = false) String startDate,
+            @RequestParam(name = "endDate", required = false) String endDate
+    ) throws Exception {
+        BillRequest request = BillRequest.builder()
+                .startDate(startDate)
+                .endDate(endDate)
+                .build();
+
+        //set file name and content type
+        String filename = "bills_report_" + System.currentTimeMillis() + ".csv";
+
+        String headerValue = String.format("attachment; filename=%s", filename);
+        response.setContentType("text/csv");
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, headerValue);
+
+        //create a csv writer
+        StatefulBeanToCsv<CSVBillResponse> writer = new StatefulBeanToCsvBuilder<CSVBillResponse>(response.getWriter())
+                .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
+                .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
+                .withOrderedResults(true)
+                .build();
+
+        //write all users to csv file
+        writer.write(billService.findAllBillToCsv(request));
     }
 }

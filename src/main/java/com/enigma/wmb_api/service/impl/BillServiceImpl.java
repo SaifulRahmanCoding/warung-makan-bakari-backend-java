@@ -4,9 +4,7 @@ import com.enigma.wmb_api.constant.EnumTransType;
 import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.dto.request.BillRequest;
 import com.enigma.wmb_api.dto.request.UpdateBillStatusRequest;
-import com.enigma.wmb_api.dto.response.BillDetailResponse;
-import com.enigma.wmb_api.dto.response.BillResponse;
-import com.enigma.wmb_api.dto.response.PaymentResponse;
+import com.enigma.wmb_api.dto.response.*;
 import com.enigma.wmb_api.entity.*;
 import com.enigma.wmb_api.repository.BillRepository;
 import com.enigma.wmb_api.service.*;
@@ -22,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -145,6 +144,45 @@ public class BillServiceImpl implements BillService {
         payment.setBillStatus(request.getBillStatus());
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<CSVBillResponse> findAllBillToCsv(BillRequest request) {
+        Specification<Bill> specification = BillSpecification.getSpecification(request);
+        // bingung cara join table dengan specification untuk dapat kolom billstatus dari payment, jadi pakai cara ini, walau cara ini tidak dianjurkan
+        List<Bill> bills = billRepository.findAll(specification).stream().filter(bill -> bill.getPayment().getBillStatus().equals("settlement")).toList();
+
+        List<CSVBillResponse> responses = new ArrayList<>();
+        responses.add(CSVBillResponse.builder()
+                .billId("bill_id")
+                .transDate("transaction_date")
+                .customerName("customer_name")
+                .tableName("table")
+                .transType("transaction_type")
+                .menuName("menu_name")
+                .quantity("quantity")
+                .price("price")
+                .build());
+
+        bills.forEach(
+                bill -> bill.getBillDetails().forEach(
+                        billDetail -> {
+                            CSVBillResponse buildResponse = CSVBillResponse.builder()
+                                    .billId(bill.getId())
+                                    .transDate(bill.getTransDate().toString())
+                                    .customerName(bill.getCustomer().getName())
+                                    .tableName((bill.getTable() != null) ? bill.getTable().getName() : "N/A")
+                                    .transType(bill.getTransType().getDescription())
+                                    .menuName(billDetail.getMenu().getName())
+                                    .quantity(billDetail.getQty().toString())
+                                    .price(billDetail.getPrice().toString())
+                                    .build();
+                            responses.add(buildResponse);
+                        }
+                )
+        );
+        return responses;
+    }
+
     private BillResponse getBillResponse(Bill bill) {
         List<BillDetailResponse> billDetailResponses = bill.getBillDetails().stream()
                 .map(detail -> BillDetailResponse.builder()
@@ -154,6 +192,14 @@ public class BillServiceImpl implements BillService {
                         .price(detail.getPrice())
                         .build())
                 .toList();
+
+        PaymentResponse paymentResponse = PaymentResponse.builder()
+                .id(bill.getPayment().getId())
+                .token(bill.getPayment().getToken())
+                .redirectUrl(bill.getPayment().getRedirectUrl())
+                .transactionStatus(bill.getPayment().getBillStatus())
+                .build();
+
         return BillResponse.builder()
                 .id(bill.getId())
                 .customerId(bill.getCustomer().getId())
@@ -161,6 +207,7 @@ public class BillServiceImpl implements BillService {
                 .transDate(String.valueOf(bill.getTransDate()))
                 .transType(bill.getTransType().getId().name())
                 .billDetails(billDetailResponses)
+                .paymentResponse(paymentResponse)
                 .build();
     }
 }

@@ -30,4 +30,6 @@ public class BeanConfiguration {
     public RestClient restClient() {
         return RestClient.create();
     }
+
+
 }
