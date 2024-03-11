@@ -9,6 +9,7 @@ import com.enigma.wmb_api.entity.*;
 import com.enigma.wmb_api.repository.BillRepository;
 import com.enigma.wmb_api.service.*;
 import com.enigma.wmb_api.specification.BillSpecification;
+import com.enigma.wmb_api.specification.CSVBillSpecification;
 import com.enigma.wmb_api.util.DateUtil;
 import com.enigma.wmb_api.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
@@ -147,9 +148,8 @@ public class BillServiceImpl implements BillService {
     @Transactional(readOnly = true)
     @Override
     public List<CSVBillResponse> findAllBillToCsv(BillRequest request) {
-        Specification<Bill> specification = BillSpecification.getSpecification(request);
-        // bingung cara join table dengan specification untuk dapat kolom billstatus dari payment, jadi pakai cara ini, walau cara ini tidak dianjurkan
-        List<Bill> bills = billRepository.findAll(specification).stream().filter(bill -> bill.getPayment().getBillStatus().equals("settlement")).toList();
+        Specification<Bill> specification = CSVBillSpecification.getSpecification(request);
+        List<Bill> bills = billRepository.findAll(specification);
 
         List<CSVBillResponse> responses = new ArrayList<>();
         responses.add(CSVBillResponse.builder()

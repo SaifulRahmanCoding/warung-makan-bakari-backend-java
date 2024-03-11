@@ -8,7 +8,6 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.sql.Timestamp;
@@ -16,19 +15,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Slf4j
 @RequiredArgsConstructor
-public class BillSpecification {
+public class CSVBillSpecification {
     public static Specification<Bill> getSpecification(BillRequest request) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if (request.getTransDate() != null) {
-                Date date = DateUtil.parseDate(request.getTransDate(), "yyyy-MM-dd");
-                Timestamp endDate = new Timestamp(date.getTime() + 86399000);
-                // log.info("tanggal-> " + date + " " + endDate);
-                Predicate transDate = criteriaBuilder.between(root.get("transDate"), date, endDate);
-                predicates.add(transDate);
-            }
 
             if (request.getStartDate() != null || request.getEndDate() != null) {
 
@@ -44,20 +35,21 @@ public class BillSpecification {
                 } else if (request.getStartDate() != null) {
 
                     Date date = DateUtil.parseDate(request.getStartDate(), "yyyy-MM-dd");
-                    log.info(date + " \n");
                     Predicate startDate = criteriaBuilder.greaterThanOrEqualTo(root.get("transDate"), date);
-                    log.info(startDate + " \n");
 
                     predicates.add(startDate);
 
                 } else {
 
                     Date date = DateUtil.parseDate(request.getEndDate(), "yyyy-MM-dd");
-                    log.info(date + " ");
                     Predicate startDate = criteriaBuilder.greaterThanOrEqualTo(root.get("transDate"), date);
                     predicates.add(startDate);
                 }
             }
+            Join<Bill, Payment> billJoin = root.join("payment", JoinType.INNER);
+            Predicate billStatusPredicate = criteriaBuilder.equal(billJoin.get("billStatus"), "settlement");
+            predicates.add(billStatusPredicate);
+
             return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
         };
     }
