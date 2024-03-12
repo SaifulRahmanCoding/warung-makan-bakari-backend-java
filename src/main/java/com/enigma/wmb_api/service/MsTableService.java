@@ -13,7 +13,7 @@ public interface MsTableService {
 
     MsTable create(MsTableRequest request);
 
-    MsTable update(MsTable menu);
+    MsTable update(MsTable table);
 
     void delete(String id);
 }

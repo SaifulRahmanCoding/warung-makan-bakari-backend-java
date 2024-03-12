@@ -45,10 +45,10 @@ public class MsTableServiceImpl implements MsTableService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public MsTable update(MsTable menu) {
-        validationUtil.validate(menu);
-        findById(menu.getId());
-        return tableRepository.saveAndFlush(menu);
+    public MsTable update(MsTable table) {
+        validationUtil.validate(table);
+        findById(table.getId());
+        return tableRepository.saveAndFlush(table);
     }
 
     @Transactional(rollbackFor = Exception.class)
