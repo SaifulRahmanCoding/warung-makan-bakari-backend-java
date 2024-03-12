@@ -11,6 +11,4 @@ public class UpdateCustomerRequest {
     private String id;
     private String name;
     private String mobilePhoneNo;
-    private Boolean isMember;
-
 }
