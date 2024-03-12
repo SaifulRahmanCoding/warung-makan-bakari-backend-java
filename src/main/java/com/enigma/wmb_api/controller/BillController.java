@@ -95,7 +95,7 @@ public class BillController {
         BillResponse bill = billService.findById(id);
         CommonResponse<BillResponse> response = CommonResponse.<BillResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("successfully get bill")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(bill)
                 .build();
         return ResponseEntity.ok(response);
