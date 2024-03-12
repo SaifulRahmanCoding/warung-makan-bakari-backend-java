@@ -40,9 +40,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         currentCustomer.setName(request.getName());
         currentCustomer.setMobilePhoneNo(request.getMobilePhoneNo());
-        currentCustomer.setIsMember(request.getIsMember());
         customerRepository.saveAndFlush(currentCustomer);
-
         return convertCustomerToCustomerResponse(currentCustomer);
     }
 
