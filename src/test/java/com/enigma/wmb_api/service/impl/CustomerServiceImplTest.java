@@ -118,6 +118,7 @@ class CustomerServiceImplTest {
         Page<Customer> page = new PageImpl<>(customers);
 
         Mockito.when(customerRepository.findAll(Mockito.any(Specification.class), Mockito.eq(pageable))).thenReturn(page);
+        // when
         Page<CustomerResponse> customerResponses = customerService.findAll(request);
 
         assertNotNull(customerResponses);
