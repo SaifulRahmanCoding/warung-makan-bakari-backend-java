@@ -1,6 +1,7 @@
 package com.enigma.wmb_api.controller;
 
 import com.enigma.wmb_api.constant.APIUrl;
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.dto.request.MsTableRequest;
 import com.enigma.wmb_api.dto.response.CommonResponse;
 import com.enigma.wmb_api.entity.MsTable;
@@ -25,7 +26,7 @@ public class MsTableController {
         MsTable table = tableService.create(request);
         CommonResponse<MsTable> response = CommonResponse.<MsTable>builder()
                 .statusCode(HttpStatus.CREATED.value())
-                .message("successfully create new table")
+                .message(ResponseMessage.SUCCESS_SAVE_DATA)
                 .data(table)
                 .build();
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -37,7 +38,7 @@ public class MsTableController {
         MsTable table = tableService.update(msTable);
         CommonResponse<MsTable> response = CommonResponse.<MsTable>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("successfully update table")
+                .message(ResponseMessage.SUCCESS_UPDATE_DATA)
                 .data(table)
                 .build();
         return ResponseEntity.ok(response);
@@ -49,7 +50,7 @@ public class MsTableController {
         tableService.delete(id);
         CommonResponse<MsTable> response = CommonResponse.<MsTable>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("successfully delete table")
+                .message(ResponseMessage.SUCCESS_DELETE_DATA)
                 .build();
         return ResponseEntity.ok(response);
     }
@@ -60,7 +61,7 @@ public class MsTableController {
         List<MsTable> tables = tableService.findAll();
         CommonResponse<List<MsTable>> response = CommonResponse.<List<MsTable>>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("successfully get all table")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(tables)
                 .build();
         return ResponseEntity.ok(response);
@@ -72,7 +73,7 @@ public class MsTableController {
         MsTable table = tableService.findById(id);
         CommonResponse<MsTable> response = CommonResponse.<MsTable>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("successfully get table")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(table)
                 .build();
         return ResponseEntity.ok(response);
