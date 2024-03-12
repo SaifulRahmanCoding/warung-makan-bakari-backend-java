@@ -216,30 +216,10 @@ class BillServiceImplTest {
                 .table(MsTable.builder().build())
                 .payment(Payment.builder().billStatus("ordered").build())
                 .billDetails(List.of(
-                        BillDetail.builder()
-                                .id("bill-dt-1")
-                                .menu(Menu.builder()
-                                        .name("menu-1")
-                                        .price(3000L)
-                                        .build())
-                                .qty(3)
-                                .build(),
-                        BillDetail.builder()
-                                .id("bill-dt-2")
-                                .menu(Menu.builder()
-                                        .name("menu-2")
-                                        .price(3000L)
-                                        .build())
-                                .qty(3)
-                                .build(),
-                        BillDetail.builder()
-                                .id("bill-dt-3")
-                                .menu(Menu.builder()
-                                        .name("menu-3")
-                                        .price(3000L)
-                                        .build())
-                                .qty(2)
-                                .build()
+                        BillDetail.builder().menu(Menu.builder().build()).build(),
+                        BillDetail.builder().menu(Menu.builder().build()).build(),
+                        BillDetail.builder().menu(Menu.builder().build()).build()
+
                 ))
                 .build();
         Optional<Bill> optionalBill = Optional.of(bill);
@@ -255,6 +235,7 @@ class BillServiceImplTest {
     @Test
     void shouldReturnBillWhenFindAllBillToCsv() {
         BillRequest request = BillRequest.builder().build();
+
         List<Bill> bills = List.of(
                 Bill.builder()
                         .customer(Customer.builder().build())
@@ -263,19 +244,11 @@ class BillServiceImplTest {
                         .transDate(new Date())
                         .payment(Payment.builder().build())
                         .billDetails(List.of(
-                                BillDetail.builder().menu(Menu.builder().build()).build(),
-                                BillDetail.builder().menu(Menu.builder().build()).build()
-                        ))
-                        .build(),
-                Bill.builder()
-                        .customer(Customer.builder().build())
-                        .table(MsTable.builder().build())
-                        .transType(TransType.builder().id(EnumTransType.DI).build())
-                        .transDate(new Date())
-                        .payment(Payment.builder().build())
-                        .billDetails(List.of(
-                                BillDetail.builder().menu(Menu.builder().build()).build(),
-                                BillDetail.builder().menu(Menu.builder().build()).build()
+                                BillDetail.builder()
+                                        .qty(3)
+                                        .price(3000L)
+                                        .menu(Menu.builder().build())
+                                        .build()
                         ))
                         .build()
         );
