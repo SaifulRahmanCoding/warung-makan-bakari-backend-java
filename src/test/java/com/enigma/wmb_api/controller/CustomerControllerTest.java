@@ -132,7 +132,7 @@ class CustomerControllerTest {
                 .andDo(result -> {
                     CommonResponse<List<CustomerResponse>> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
                     });
-                    assertNotNull(response);
+                    assertNotNull(response.getData());
                     assertEquals(200, response.getStatusCode());
                     assertEquals(ResponseMessage.SUCCESS_GET_DATA, response.getMessage());
                     assertEquals("mawar",response.getData().stream().findFirst().get().getName());
