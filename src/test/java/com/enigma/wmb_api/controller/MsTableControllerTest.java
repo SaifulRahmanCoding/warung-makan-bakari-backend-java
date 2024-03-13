@@ -89,7 +89,7 @@ class MsTableControllerTest {
 
     @WithMockUser(username = "superadmin", roles = {"SUPER_ADMIN"})
     @Test
-    void deleteTable() throws Exception {
+    void shouldHave200StatusAndReturnCommandResponseWhenDeleteTable() throws Exception {
         String id = "table-id";
         Mockito.doNothing().when(tableService).delete(id);
         mockMvc.perform(
@@ -105,7 +105,7 @@ class MsTableControllerTest {
 
     @WithMockUser(username = "superadmin", roles = {"SUPER_ADMIN"})
     @Test
-    void findAllTable() throws Exception {
+    void shouldHave200StatusAndReturnCommandResponseWhenFindAllTable() throws Exception {
         List<MsTable> tables = List.of(
                 MsTable.builder().build(),
                 MsTable.builder().build()
@@ -126,7 +126,7 @@ class MsTableControllerTest {
 
     @WithMockUser(username = "superadmin", roles = {"SUPER_ADMIN"})
     @Test
-    void findTableById() throws Exception {
+    void shouldHave200StatusAndReturnCommandResponseWhenFindTableById() throws Exception {
         String id = "table-id";
         MsTable mockTable = MsTable.builder()
                 .id(id)
