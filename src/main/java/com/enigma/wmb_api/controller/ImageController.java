@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@Hidden
+// @Hidden
 public class ImageController {
     private final ImageService imageService;
 

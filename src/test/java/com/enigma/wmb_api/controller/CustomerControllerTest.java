@@ -6,8 +6,6 @@ import com.enigma.wmb_api.dto.request.CustomerRequest;
 import com.enigma.wmb_api.dto.request.UpdateCustomerRequest;
 import com.enigma.wmb_api.dto.response.CommonResponse;
 import com.enigma.wmb_api.dto.response.CustomerResponse;
-import com.enigma.wmb_api.entity.Customer;
-import com.enigma.wmb_api.entity.MsTable;
 import com.enigma.wmb_api.service.CustomerService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
