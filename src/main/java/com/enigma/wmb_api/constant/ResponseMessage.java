@@ -14,5 +14,5 @@ public class ResponseMessage {
     public static final String WRONG_USERNAME_OR_PASSWORD = "username or password it's wrong";
     public static final String BAD_CREDENTIAL = "Bad credentials";
     public static final String INVALID_MIN_MAX_PRICE = "min price cannot be more than max price";
-
+    public static final String ERROR_INVALID_JWT = "invalid jwt";
 }

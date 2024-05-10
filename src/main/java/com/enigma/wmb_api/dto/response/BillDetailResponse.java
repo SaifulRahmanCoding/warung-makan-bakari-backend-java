@@ -12,5 +12,6 @@ public class BillDetailResponse {
     private String id;
     private Long price;
     private String menuId;
+    private String menuName;
     private Integer quantity;
 }

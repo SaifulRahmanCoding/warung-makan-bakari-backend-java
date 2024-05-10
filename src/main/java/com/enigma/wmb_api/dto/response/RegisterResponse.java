@@ -12,4 +12,5 @@ import java.util.List;
 public class RegisterResponse {
     private String username;
     private List<String> roles;
+    private String idCustomer;
 }

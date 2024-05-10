@@ -12,6 +12,7 @@ import com.enigma.wmb_api.service.MenuService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,6 +26,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = APIUrl.MENU_API)
+@Slf4j
 public class MenuController {
     private final MenuService menuService;
     private final ObjectMapper objectMapper;
@@ -99,19 +101,26 @@ public class MenuController {
             @RequestParam(name = "size", defaultValue = "10") Integer size,
             @RequestParam(name = "sortBy", defaultValue = "name") String sortBy,
             @RequestParam(name = "direction", defaultValue = "asc") String direction,
-            @RequestParam(name = "name", required = false) String name,
-            @RequestParam(name = "price", required = false) Long price,
+            @RequestParam(name = "q", required = false) String query,
             @RequestParam(name = "minPrice", required = false) Long minPrice,
             @RequestParam(name = "maxPrice", required = false) Long maxPrice
     ) {
+        Long intQuery;
+        try {
+            intQuery = Long.valueOf(query);
+            query = null;
+        } catch (Exception e) {
+            intQuery = null;
+        }
+        log.info(intQuery == null ? "null bro": intQuery+"");
         // buat request untuk parameter method findAll
         MenuRequest request = MenuRequest.builder()
                 .page(page)
                 .size(size)
                 .sortBy(sortBy)
                 .direction(direction)
-                .name(name)
-                .price(price)
+                .name(query)
+                .price(intQuery)
                 .minPrice(minPrice)
                 .maxPrice(maxPrice)
                 .build();

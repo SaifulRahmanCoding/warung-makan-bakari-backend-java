@@ -16,17 +16,16 @@ public class CustomerSpecification {
             if (request.getName() != null) {
                 Predicate name = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + request.getName().toLowerCase() + "%");
                 predicates.add(name);
-
             }
             if (request.getMobilePhoneNo() != null) {
-                Predicate phone = criteriaBuilder.equal(root.get("mobilePhoneNo"), request.getMobilePhoneNo());
+                Predicate phone = criteriaBuilder.like(root.get("mobilePhoneNo"), "%" + request.getMobilePhoneNo() + "%");
                 predicates.add(phone);
             }
             if (request.getIsMember() != null) {
                 Predicate isMember = criteriaBuilder.equal(root.get("isMember"), request.getIsMember());
                 predicates.add(isMember);
             }
-            return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
+            return (predicates.isEmpty()) ? null : query.where(criteriaBuilder.or(predicates.toArray(new Predicate[]{}))).getRestriction();
         };
     }
 }

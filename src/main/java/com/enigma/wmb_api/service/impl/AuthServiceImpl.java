@@ -114,6 +114,14 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
+    @Override
+    public boolean validateToken() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserAccount userAccount = userAccountRepository.findByUsername(authentication.getPrincipal().toString())
+                .orElse(null);
+        return userAccount != null;
+    }
+
     private RegisterResponse saveAccountAndGetRegisterResponse(UserAccount account) {
         userAccountRepository.saveAndFlush(account);
 
@@ -122,6 +130,10 @@ public class AuthServiceImpl implements AuthService {
 
         List<String> roles = account.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
 
-        return RegisterResponse.builder().username(account.getUsername()).roles(roles).build();
+        return RegisterResponse.builder()
+                .username(account.getUsername())
+                .roles(roles)
+                .idCustomer(customer.getId())
+                .build();
     }
 }

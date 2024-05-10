@@ -58,12 +58,12 @@ public class BillController {
             @RequestParam(name = "size", defaultValue = "10") Integer size,
             @RequestParam(name = "sortBy", defaultValue = "transDate") String sortBy,
             @RequestParam(name = "direction", defaultValue = "desc") String direction,
-            @RequestParam(name = "transDate", required = false) String transDate,
+            @RequestParam(name = "q", required = false) String transDate,
             @RequestParam(name = "startDate", required = false) String startDate,
             @RequestParam(name = "endDate", required = false) String endDate
     ) {
         BillRequest request = BillRequest.builder()
-                .transDate(transDate)
+                .transDate(!transDate.isEmpty() ? transDate : null)
                 .startDate(startDate)
                 .endDate(endDate)
                 .page(page)

@@ -42,6 +42,20 @@ public class CustomerController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
+    @PutMapping(
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            path = "/{id}"
+    )
+    public ResponseEntity<CommonResponse<String>> updateCustomer(@PathVariable String id, @RequestParam("status") Boolean statusMember) {
+        customerService.updateStatusMemberById(id, statusMember);
+        CommonResponse<String> response = CommonResponse.<String>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message(ResponseMessage.SUCCESS_UPDATE_DATA)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<String>> deleteCustomer(@PathVariable String id) {
@@ -73,18 +87,17 @@ public class CustomerController {
             @RequestParam(name = "size", defaultValue = "10") Integer size,
             @RequestParam(name = "sortBy", defaultValue = "name") String sortBy,
             @RequestParam(name = "direction", defaultValue = "asc") String direction,
-            @RequestParam(name = "name", required = false) String name,
-            @RequestParam(name = "phone", required = false) String phone,
-            @RequestParam(name = "member", required = false) Boolean member
+            @RequestParam(name = "q", required = false, defaultValue = "") String query,
+            @RequestParam(name = "isMember", required = false) Boolean isMember
     ) {
         CustomerRequest request = CustomerRequest.builder()
                 .page(page)
                 .size(size)
                 .sortBy(sortBy)
                 .direction(direction)
-                .name(name)
-                .mobilePhoneNo(phone)
-                .isMember(member)
+                .name(!query.isBlank() ? query : null)
+                .mobilePhoneNo(!query.isBlank() ? query : null)
+                .isMember(isMember)
                 .build();
         Page<CustomerResponse> customers = customerService.findAll(request);
         PagingResponse pagingResponse = PagingResponse.builder()

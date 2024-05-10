@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -83,12 +84,15 @@ public class CustomerServiceImpl implements CustomerService {
         // buat list customer response dengan value content customers yang di ubah menggunakan stream map
         List<CustomerResponse> customerResponses = customers.getContent().stream()
                 .map(customer -> {
+                    int i = 0;
                     return CustomerResponse.builder()
                             .id(customer.getId())
                             .name(customer.getName())
                             .mobilePhoneNo(customer.getMobilePhoneNo())
                             .isMember(customer.getIsMember())
                             .userAccountId(customer.getUserAccount().getId())
+                            .username(customer.getUserAccount().getUsername())
+                            .role(customer.getUserAccount().getRole().get(i++).getRole().name())
                             .build();
                 }).toList();
         return new PageImpl<>(customerResponses, pageable, customers.getTotalElements());
